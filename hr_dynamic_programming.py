@@ -1,4 +1,4 @@
-# Enter your code here. Read input from STDIN. Print output to STDOUT
+# # Enter your code here. Read input from STDIN. Print output to STDOUT
 # numTest = input()
 
 # def distribute(numPpl, distro):
@@ -42,52 +42,63 @@ def makeChange(val, coins):
     return memo[val]
 
 # Equal https://www.hackerrank.com/challenges/equal
-def subChoco(idx, val, distro):
-    distro[idx] -= val
-    return distro
+memo = {1:1, 2:1, 3:2, 4:2, 5:1}
+def minOps(val, counter, memo):
+    # print(val, counter, memo)
+    if val in memo:
+        return memo[val]
+    elif val==0:
+        return counter
+    elif val<0:
+        return 99999999999999
+    else:
+        arr = [
+            minOps(val-1, counter+1, memo)+1,
+            minOps(val-2, counter+1, memo)+1,
+            minOps(val-5, counter+1, memo)+1]
+        # print(arr)
+        memo[val] = min(arr)
+        return memo[val]
 
-def minMax(arr):
-    minVal = 9999999999
-    maxVal = 0
-    maxIdx = 0
-    for idx, val in enumerate(arr):
-        if val < minVal:
-            minVal = val
-        if val > maxVal:
-            maxVal = val
-            maxIdx = idx
-    return minVal, maxVal, maxIdx
-
-def equalize(distro):
-    # minVal = min(distro)
-    # maxVal = max(distro)
-    # maxIdx = distro.index(maxVal)
-    minVal, maxVal, maxIdx = minMax(distro)
-    diff = maxVal - minVal
-
-    if diff >= 5:
-        # print(5,distro)
-        return subChoco(maxIdx, 5, distro)
-    if diff >= 2:
-        # print(2,distro)
-        return subChoco(maxIdx, 2, distro)
-    if diff >= 1:
-        # print(1,distro)
-        return subChoco(maxIdx, 1, distro)
-
-def distribute(distro):
+def distribute(distro, memo):
     distro = [int(ele) for ele in distro.split(' ')]
-
     if len(set(distro)) == 1:
         return 0
 
-    count = 0
-    while len(set(distro)) > 1:
-        distro = equalize(distro)
-        count += 1
+    totals = []
+    distro = [ele+10 for ele in distro] #because the optimal answer might be negative ex [-1,-1,-1]
+    distroMin = min(distro)
+    distroMinLowerBound = distroMin-5 if distroMin-5>0 else 0 #limit range of values to check
+    for minVal in range(distroMinLowerBound, distroMin+1):
+        distroCopy = distro[:]
+        distroCopy = [val - minVal for val in distroCopy]
+        count = sum([minOps(val, 0, memo) for val in distroCopy])
+        totals.append(count)
 
-    return count
+    return min(totals)
 
+def fileImport(name):
+    return [i.strip('\n') for i in open('/Users/cloudlife/Desktop/%s.txt' % name).readlines()]
+
+def comparator(dataInName, dataInSpacing, dataOutName, dataOutSpacing):
+    dataIn = fileImport(dataInName)
+    dataOut = fileImport(dataOutName)
+
+    dataInLength = dataIn.pop(0) #gets the number of test cases
+    dataIn = [ (dataIn[i], dataIn[i+1]) for i in range(0, len(dataIn), dataInSpacing) ] #groups testcase info
+
+    errorCount = 0
+    for i in range(0, len(dataIn)):
+        testcase = dataIn[i][1]
+        testcaseAns = dataOut[i]
+
+        funcOutput = distribute(testcase, memo)
+        err = ''
+        if int(funcOutput) != int(testcaseAns):
+            err = 'mismatch'
+            errorCount+=1
+        print(testcaseAns, funcOutput, err)
+    print(errorCount)
 
 
 # Longest Increasing subsequence https://www.hackerrank.com/challenges/longest-increasing-subsequent
@@ -106,22 +117,3 @@ def distribute(distro):
 #         if seq[-1] > arr[idx]:
 #             
 
-
-def output(digits, idx, arr):
-    convert = {1:'', 2:'abc', 3:'def', 4:'ghi', 5:'jkl', 6: 'mno', 7:'pqrs', 8: 'tuv', 9:'wxyz', 0:''}
-    newDigits = digits[:]
-    if all([type(ele) is str for ele in newDigits]):
-        arr.append(newDigits)
-        return 
-
-    num = newDigits[idx]
-    if type(num) is int:
-        for char in list(convert[num]):
-            newDigits[idx] = char
-            output(newDigits, idx+1, arr)
-
-def numToWords(digits):
-    digits = [int(ele) for ele in list(digits)]
-    memo = []
-    output(digits, 0, memo)
-    return [ele[0]+ele[1] for ele in memo]
