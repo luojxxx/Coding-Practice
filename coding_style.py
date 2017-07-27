@@ -133,6 +133,8 @@ def main():
 ################################################################################
 ################################################################################
 ################################################################################
+# Helper library pulled from Peter Norvig's answers to learn from
+# since he found these functions particularly helpful
 
 import re
 import numpy as np

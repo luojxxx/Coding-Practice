@@ -1,13 +1,12 @@
 # # Enter your code here. Read input from STDIN. Print output to STDOUT
 # numTest = input()
 
-# def distribute(numPpl, distro):
+# def distribute(numPpl):
 #     return 1
 
 # for _ in range(int(numTest)):
-#     numPpl = input()
-#     distro = input()
-#     print(distribute(numPpl, distro))
+#     arr = input()
+#     print(distribute(arr))
 
 #Coin change https://www.hackerrank.com/challenges/coin-change
 def makeChange(val, coins):
@@ -100,20 +99,44 @@ def comparator(dataInName, dataInSpacing, dataOutName, dataOutSpacing):
         print(testcaseAns, funcOutput, err)
     print(errorCount)
 
+# https://www.hackerrank.com/challenges/recursive-digit-sum
+def super_digit(n, k):
+    def _compute(num):
+        num_str = str(num)
+        total = sum(map(int, num_str))
+        if len(str(total)) == 1:
+            return total
+        else:
+            return _compute(total)
+        
+    # n, k = [int(x) for x in raw_input().strip().split()]
+    concat = int(str(n) * k)
+    if len(str(concat)) == 1:
+        return concat
+    else:
+        return _compute(concat)
 
-# Longest Increasing subsequence https://www.hackerrank.com/challenges/longest-increasing-subsequent
-# length = int(input())
+# https://www.hackerrank.com/challenges/mandragora
+def genSums(arr):
+    memo = {}
+    total = 0
+    for idx , val in reversed(list(enumerate(arr))):
+        total += val
+        memo[idx+1] = total
+    return memo
 
-# arr = []
-# for _ in range(length):
-#     arr.append(int(input()))
+def splitEatBattle(strength, memo):
+    # strength = idx + 1
+    return strength*memo[strength]
 
-# def lis(arr):
-#     memo={0: arr[0]}
-    
-#     for idx in range(1,len(arr)):
-#         seq = memo[idx]
+def maxXp(arr):
+    arr = [int(val) for val in arr.split(' ')]
+    arr.sort()
 
-#         if seq[-1] > arr[idx]:
-#             
+    memo = genSums(arr)
+    xpArr =[]
+    for idx in range(1, len(arr)+1):
+        xpArr.append(splitEatBattle(idx, memo))
+    return max(xpArr)
+
 
